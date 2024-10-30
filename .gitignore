@@ -1,0 +1,84 @@
+# Laravel & PHP specific
+/vendor
+/node_modules
+/public/storage
+/storage/*.key
+/.env
+/.env.*
+/.phpunit.result.cache
+Homestead.yaml
+Homestead.json
+/.vagrant
+
+# Laravel 5 & 6 specific
+/public/hot
+/public/storage
+/storage/debugbar
+
+# IDE and editor specific
+/.idea
+/.vscode
+*.sublime-project
+*.sublime-workspace
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Composer
+composer.lock
+
+# NPM/Yarn
+npm-debug.log
+yarn-error.log
+
+# Temporary files
+.phpunit.result.cache
+storage/*.key
+.env.backup
+.env.local
+.env.development
+.env.production
+.env.testing
+.env.example
+
+# Cache
+/storage/framework/cache/data
+/storage/logs
+
+# Sentry
+.sentryclirc
+
+# Ignore IDE or system-specific metadata
+/.vscode/
+*.swp
+*.idea/
+*.iml
+*.log
+
+# Ignoring user-uploaded files
+/public/uploads
+/public/files
+
+# Ignore test coverage
+/coverage/
+
+# Ignore built assets
+/public/mix-manifest.json
+/public/js/app.js
+/public/css/app.css
+
+# Other generated files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp
+.pnp.js
+
+# Node.js build artifacts
+build/
+dist/
+
+# Backup files
+*.bak
+*.backup

@@ -6,7 +6,8 @@ RUN apk --no-cache update && \
     apk add --update --no-cache nginx wget yarn curl zlib-dev libzip-dev zip libpng-dev icu-dev nodejs npm
 
 # 使用 npm 安裝 yarn 和 cross-env
-RUN npm install -g yarn
+RUN npm install -g yarn \
+    && yarn global add cross-env
 
 # 安裝 PHP MySQL 擴展
 RUN docker-php-ext-install pdo pdo_mysql

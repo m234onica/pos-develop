@@ -1,36 +1,34 @@
 FROM php:7.4-fpm-alpine
 
-# 安裝必要的工具和 nginx，以及 nodejs 和 yarn
-RUN apk add --no-cache nginx wget nodejs npm
+USER root
+# Apk install
+# hadolint ignore=DL3018
+RUN apk --no-cache update && \
+    apk --no-cache add bash git && \
+    apk add --update --no-cache yarn curl zlib-dev libzip-dev zip libpng-dev icu-dev
 
-# 使用 npm 安裝 yarn 和 cross-env
-RUN npm install -g yarn
+# Install pdo
+RUN docker-php-ext-install pdo_mysql gd intl zip
 
-# 安裝 PHP MySQL 擴展
-RUN docker-php-ext-install pdo pdo_mysql
+# Symfony CLI
+RUN wget -q https://get.symfony.com/cli/installer -O - | bash && mv /root/.symfony/bin/symfony /usr/local/bin/symfony
 
-# 創建 nginx 所需的目錄
-RUN mkdir -p /run/nginx
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# 複製 nginx 配置檔案
-COPY docker/nginx.conf /etc/nginx/nginx.conf
+WORKDIR /app
 
-# 準備應用程式目錄
-RUN mkdir -p /app
-COPY . /app
-COPY ./src /app
+COPY . /app/
+VOLUME /app/vendor
+VOLUME /app/public/build
+VOLUME /app/node_modules
+VOLUME /app/var
 
-# 安裝 composer
-RUN sh -c "wget http://getcomposer.org/composer.phar && chmod a+x composer.phar && mv composer.phar /usr/local/bin/composer"
+RUN chown -R www-data:www-data /app
 
-# Install PHP dependencies
-RUN cd /app && \
-    /usr/local/bin/composer install --no-dev
+USER www-data
 
-    # Install JavaScript dependencies and compile assetsaa
-RUN cd /app && yarn install && yarn production
+RUN php composer.phar install
+RUN yarn install --dev
 
-# 更改應用程式目錄的擁有者
-RUN chown -R www-data: /app
 # 設定容器啟動時執行的指令
 CMD sh /app/docker/startup.sh

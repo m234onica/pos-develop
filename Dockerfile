@@ -1,26 +1,25 @@
+# 使用 PHP 7.4 和 Debian Bullseye 作為基礎映像
 FROM php:7.4.33-fpm-bullseye
 
 # 安裝必要的工具和依賴
-RUN apk --no-cache update && \
-    apk add --no-cache \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     bash \
     git \
     nginx \
     wget \
     curl \
-    zlib-dev \
+    zlib1g-dev \
     libzip-dev \
     zip \
     libpng-dev \
-    icu-dev \
+    libicu-dev \
     python2 \
     make \
     g++ \
-    build-base && \
-    ln -sf /usr/bin/python2 /usr/bin/python  # 指向 python2
-
-# 使用 npm 安裝 yarn 和 cross-env
-RUN yarn global add cross-env
+    build-essential && \
+    ln -sf /usr/bin/python2 /usr/bin/python && \
+    rm -rf /var/lib/apt/lists/*
 
 # 安裝 PHP MySQL 擴展
 RUN docker-php-ext-install pdo pdo_mysql
@@ -36,18 +35,27 @@ RUN mkdir -p /app
 COPY . /app
 COPY ./src /app
 
-# 安裝 composer
-RUN sh -c "wget http://getcomposer.org/composer.phar && chmod a+x composer.phar && mv composer.phar /usr/local/bin/composer"
+# 安裝 Composer
+RUN wget https://getcomposer.org/composer-stable.phar && \
+    chmod +x composer-stable.phar && \
+    mv composer-stable.phar /usr/local/bin/composer
 
-# Install PHP dependencies
+# 安裝 PHP 依賴
 RUN cd /app && \
-    /usr/local/bin/composer install --no-dev
+    composer install --no-dev
 
+# 設置 Node.js 12.x 和 npm 存儲庫，並安裝 Node.js 和 npm
+RUN curl -fsSL https://deb.nodesource.com/setup_12.x | bash - && \
+    apt-get install -y nodejs && \
+    rm -rf /var/lib/apt/lists/*
+
+# 安裝 Yarn 和 cross-env
+RUN npm install -g yarn && yarn global add cross-env
 
 # 更改應用程式目錄的擁有者
 RUN chown -R www-data: /app
 
-RUN apk add --no-cache nodejs=12.x npm
+USER www-data
 
 # 安裝 Node 依賴並替換 node-sass
 RUN cd /app && \
@@ -55,8 +63,8 @@ RUN cd /app && \
     yarn remove node-sass && \
     yarn add sass --dev
 
-RUN cd /app && \
-    yarn run development
+# 編譯前端資源
+RUN cd /app && yarn run development
 
 # 設定容器啟動時執行的指令
-CMD sh /app/docker/startup.sh
+CMD ["sh", "/app/docker/startup.sh"]

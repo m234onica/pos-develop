@@ -7,6 +7,8 @@ FROM php:7.4-fpm-alpine3.13
 # 從 node_builder 階段拷貝完整的 Node.js 和 npm 目錄
 COPY --from=node_builder /usr/local /usr/local
 
+RUN node -v && npm -v
+
 # 安裝必要的工具和依賴
 RUN apk --no-cache update && \
     apk add --no-cache \
@@ -47,8 +49,7 @@ RUN wget http://getcomposer.org/composer.phar && chmod a+x composer.phar && mv c
 RUN cd /app && /usr/local/bin/composer install --no-dev
 
 # 安裝 Yarn 和 cross-env
-RUN yarn -v \
-    && yarn global add cross-env
+RUN npm install -g yarn --force && yarn global add cross-env
 
 # 更改應用程式目錄的擁有者
 RUN chown -R www-data: /app

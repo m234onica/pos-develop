@@ -1,7 +1,10 @@
-# 使用 Node.js 官方 12-alpine 作為基礎映像構建 node_builder 階段
-FROM node:12-alpine as builder
+# 使用 PHP 7.4 和 Alpine 基礎映像
+FROM php:7.4-fpm-alpine3.13
 
-# 安裝 PHP 和必要的依賴
+# 安裝 Node.js 和 npm
+RUN apk add --no-cache nodejs=12.22.12-r0 npm
+
+# 安裝必要的工具和 PHP 擴展
 RUN apk --no-cache update && \
     apk add --no-cache \
     bash \
@@ -17,21 +20,9 @@ RUN apk --no-cache update && \
     python2 \
     make \
     g++ \
-    build-base \
-    php7 \
-    php7-fpm \
-    php7-opcache \
-    php7-mysqli \
-    php7-pdo \
-    php7-pdo_mysql \
-    php7-json \
-    php7-mbstring \
-    php7-session && \
-    ln -sf /usr/bin/php7 /usr/bin/php && \
-    ln -sf /usr/sbin/php-fpm7 /usr/bin/php-fpm
-
-# 安裝 PHP MySQL 擴展
-RUN docker-php-ext-install pdo pdo_mysql
+    build-base && \
+    ln -sf /usr/bin/python2 /usr/bin/python && \
+    docker-php-ext-install pdo pdo_mysql
 
 # 創建 nginx 所需的目錄
 RUN mkdir -p /run/nginx
@@ -44,17 +35,19 @@ RUN mkdir -p /app
 COPY . /app
 COPY ./src /app
 
-# 安裝 composer
-RUN wget http://getcomposer.org/composer.phar && chmod a+x composer.phar && mv composer.phar /usr/local/bin/composer
+# 安裝 Composer
+RUN wget https://getcomposer.org/composer-stable.phar && \
+    chmod +x composer-stable.phar && \
+    mv composer-stable.phar /usr/local/bin/composer
 
 # 安裝 PHP 依賴
-RUN cd /app && /usr/local/bin/composer install --no-dev
+RUN cd /app && composer install --no-dev
 
 # 安裝 Yarn 和 cross-env
 RUN npm install -g yarn && yarn global add cross-env
 
 # 更改應用程式目錄的擁有者
-RUN chown -R www-data: /app
+RUN chown -R www-data:www-data /app
 
 USER www-data
 

@@ -1,20 +1,7 @@
-# 使用 alpine:3.13 作為基礎映像，確保兼容性
-FROM alpine:3.13 as node_builder
+# 使用 Node.js 官方 12-alpine 作為基礎映像構建 node_builder 階段
+FROM node:12-alpine as builder
 
-# 安裝 Node.js 12.x 和 npm
-RUN apk add --no-cache nodejs=12.22.12-r0 npm
-
-# PHP 環境構建
-FROM php:7.4-fpm-alpine3.13
-
-# 從 node_builder 階段拷貝完整的 Node.js 和 npm 目錄
-COPY --from=node_builder /usr /usr
-COPY --from=node_builder /lib /lib
-
-# 驗證 Node.js 和 npm 是否成功拷貝
-RUN node -v && npm -v
-
-# 安裝必要的工具和依賴
+# 安裝 PHP 和必要的依賴
 RUN apk --no-cache update && \
     apk add --no-cache \
     bash \
@@ -30,45 +17,50 @@ RUN apk --no-cache update && \
     python2 \
     make \
     g++ \
-    build-base && \
-    ln -sf /usr/bin/python2 /usr/bin/python
+    build-base \
+    php7 \
+    php7-fpm \
+    php7-opcache \
+    php7-mysqli \
+    php7-pdo \
+    php7-pdo_mysql \
+    php7-json \
+    php7-mbstring \
+    php7-session && \
+    ln -sf /usr/bin/php7 /usr/bin/php && \
+    ln -sf /usr/sbin/php-fpm7 /usr/bin/php-fpm
 
-# 安裝 PHP MySQL 擴展
-RUN docker-php-ext-install pdo pdo_mysql
-
-# 創建 nginx 所需的目錄
-RUN mkdir -p /run/nginx
-
-# 複製 nginx 配置檔案
-COPY docker/nginx.conf /etc/nginx/nginx.conf
+# 安裝 Composer
+RUN wget https://getcomposer.org/composer-stable.phar && \
+    chmod +x composer-stable.phar && \
+    mv composer-stable.phar /usr/local/bin/composer
 
 # 準備應用程式目錄
-RUN mkdir -p /app
+WORKDIR /app
 COPY . /app
-COPY ./src /app
-
-# 安裝 composer
-RUN wget http://getcomposer.org/composer.phar && chmod a+x composer.phar && mv composer.phar /usr/local/bin/composer
 
 # 安裝 PHP 依賴
-RUN cd /app && /usr/local/bin/composer install --no-dev
+RUN composer install --no-dev
 
-# 安裝 Yarn 和 cross-env
-RUN npm install -g yarn && yarn global add cross-env
+# 安裝 Node.js 依賴和編譯資源
+RUN yarn install && \
+    yarn remove node-sass && \
+    yarn add sass --dev && \
+    yarn run development
 
 # 更改應用程式目錄的擁有者
-RUN chown -R www-data: /app
+RUN chown -R www-data:www-data /app
 
-USER www-data
+# 設置 PATH 環境變量
+ENV PATH="/usr/local/node/bin:$PATH"
 
-# 安裝 Node 依賴並替換 node-sass
-RUN cd /app && \
-    yarn install && \
-    yarn remove node-sass && \
-    yarn add sass --dev
+# Nginx 配置和啟動腳本
+COPY docker/nginx.conf /etc/nginx/nginx.conf
+COPY docker/startup.sh /app/startup.sh
+RUN chmod +x /app/startup.sh
 
-# 編譯前端資源
-RUN cd /app && yarn run development
+# 暴露端口
+EXPOSE 80
 
-# 設定容器啟動時執行的指令
-CMD ["sh", "/app/docker/startup.sh"]
+# 啟動容器時執行的指令
+CMD ["sh", "/app/startup.sh"]

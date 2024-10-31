@@ -1,8 +1,5 @@
 FROM php:7.4-fpm-alpine3.13
 
-# 將 Node.js 路徑加入 PATH
-ENV PATH="/usr/local/node/bin:$PATH"
-
 # 安裝必要的工具和依賴
 RUN apk --no-cache update && \
     apk add --no-cache \
@@ -49,13 +46,17 @@ RUN cd /app && \
 # 更改應用程式目錄的擁有者
 RUN chown -R www-data: /app
 
+# 設置 PATH 環境變量
+ENV PATH="/usr/local/node/bin:$PATH"
+
 # 下載並安裝 Node.js 12.x
 RUN wget https://nodejs.org/dist/v12.22.12/node-v12.22.12-linux-x64.tar.xz && \
     tar -xf node-v12.22.12-linux-x64.tar.xz && \
     mv node-v12.22.12-linux-x64 /usr/local/node && \
-    ln -s /usr/local/node/bin/node /usr/local/bin/node && \
-    ln -s /usr/local/node/bin/npm /usr/local/bin/npm && \
-    rm node-v12.22.12-linux-x64.tar.xz
+    ln -sf /usr/local/node/bin/node /usr/local/bin/node && \
+    ln -sf /usr/local/node/bin/npm /usr/local/bin/npm && \
+    rm node-v12.22.12-linux-x64.tar.xz && \
+    /usr/local/node/bin/node -v && /usr/local/node/bin/npm -v
 
 # 確認 Node.js 和 npm 可用
 RUN node -v && npm -v

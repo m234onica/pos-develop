@@ -1,4 +1,13 @@
+# 使用多階段構建引入 Node.js 12
+FROM node:12-alpine as node_builder
+
+# PHP 環境構建
 FROM php:7.4-fpm-alpine3.13
+
+# 從 node_builder 階段拷貝 node 和 npm
+COPY --from=node_builder /usr/local/bin/node /usr/local/bin/
+COPY --from=node_builder /usr/local/lib/node_modules /usr/local/lib/node_modules
+COPY --from=node_builder /usr/local/bin/npm /usr/local/bin/
 
 # 安裝必要的工具和依賴
 RUN apk --no-cache update && \
@@ -17,9 +26,7 @@ RUN apk --no-cache update && \
     make \
     g++ \
     build-base && \
-    ln -sf /usr/bin/python2 /usr/bin/python  # 指向 python2
-
-# 使用 npm 安裝 yarn 和 cross-env
+    ln -sf /usr/bin/python2 /usr/bin/python
 
 # 安裝 PHP MySQL 擴展
 RUN docker-php-ext-install pdo pdo_mysql
@@ -36,50 +43,27 @@ COPY . /app
 COPY ./src /app
 
 # 安裝 composer
-RUN sh -c "wget http://getcomposer.org/composer.phar && chmod a+x composer.phar && mv composer.phar /usr/local/bin/composer"
+RUN wget http://getcomposer.org/composer.phar && chmod a+x composer.phar && mv composer.phar /usr/local/bin/composer
 
-# Install PHP dependencies
-RUN cd /app && \
-    /usr/local/bin/composer install --no-dev
+# 安裝 PHP 依賴
+RUN cd /app && /usr/local/bin/composer install --no-dev
 
-USER root
+# 安裝 Yarn 和 cross-env
+RUN npm install -g yarn && yarn global add cross-env
+
 # 更改應用程式目錄的擁有者
 RUN chown -R www-data: /app
 
-# 設置 PATH 環境變量
-ENV PATH="/usr/local/node/bin:$PATH"
-
-# 下載並解壓 Node.js
-RUN wget https://nodejs.org/dist/v12.22.12/node-v12.22.12-linux-x64.tar.xz && \
-    tar -xf node-v12.22.12-linux-x64.tar.xz && \
-    rm node-v12.22.12-linux-x64.tar.xz
-
-# 移動 Node.js 並創建軟連結
-RUN mv node-v12.22.12-linux-x64 /usr/local/node && \
-    ln -s /usr/local/node/bin/node /usr/local/bin/node && \
-    ln -s /usr/local/node/bin/npm /usr/local/bin/npm
-
-# 確認安裝
-RUN /usr/local/node/bin/node -v && /usr/local/node/bin/npm -v
-
 USER www-data
-
-# 確認 Node.js 和 npm 可用
-RUN node -v && npm -v
-
-RUN npm install -g yarn
-
-RUN yarn global add cross-env
 
 # 安裝 Node 依賴並替換 node-sass
 RUN cd /app && \
     yarn install && \
-    yarn why node-sass && \
     yarn remove node-sass && \
     yarn add sass --dev
 
-RUN cd /app && \
-    yarn run development
+# 編譯前端資源
+RUN cd /app && yarn run development
 
 # 設定容器啟動時執行的指令
-CMD sh /app/docker/startup.sh
+CMD ["sh", "/app/docker/startup.sh"]

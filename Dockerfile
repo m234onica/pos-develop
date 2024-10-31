@@ -47,7 +47,8 @@ RUN wget http://getcomposer.org/composer.phar && chmod a+x composer.phar && mv c
 RUN cd /app && /usr/local/bin/composer install --no-dev
 
 # 安裝 Yarn 和 cross-env
-RUN npm install -g yarn && yarn global add cross-env
+RUN yarn -v \
+    && yarn global add cross-env
 
 # 更改應用程式目錄的擁有者
 RUN chown -R www-data: /app

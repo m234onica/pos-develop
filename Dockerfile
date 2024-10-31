@@ -1,6 +1,8 @@
 # 使用 PHP 7.4 和 Debian Bullseye 作為基礎映像
 FROM php:7.4.33-fpm-bullseye
 
+USER root
+
 # 安裝必要的工具和依賴
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \

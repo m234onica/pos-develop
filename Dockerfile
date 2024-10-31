@@ -31,8 +31,9 @@ RUN cd /app && \
 
 # 更改應用程式目錄的擁有者
 RUN chown -R www-data: /app
+
 # 安裝 nodejs 依賴
-RUN cd /app yarn run development
+RUN cd /app && yarn run development
 
 # 設定容器啟動時執行的指令
 CMD sh /app/docker/startup.sh

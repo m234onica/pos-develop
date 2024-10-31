@@ -35,32 +35,42 @@ RUN wget https://getcomposer.org/composer-stable.phar && \
     chmod +x composer-stable.phar && \
     mv composer-stable.phar /usr/local/bin/composer
 
+# 安裝 PHP MySQL 擴展
+RUN docker-php-ext-install pdo pdo_mysql
+
+# 創建 nginx 所需的目錄
+RUN mkdir -p /run/nginx
+
+# 複製 nginx 配置檔案
+COPY docker/nginx.conf /etc/nginx/nginx.conf
+
 # 準備應用程式目錄
-WORKDIR /app
+RUN mkdir -p /app
 COPY . /app
+COPY ./src /app
+
+# 安裝 composer
+RUN wget http://getcomposer.org/composer.phar && chmod a+x composer.phar && mv composer.phar /usr/local/bin/composer
 
 # 安裝 PHP 依賴
-RUN composer install --no-dev
+RUN cd /app && /usr/local/bin/composer install --no-dev
 
-# 安裝 Node.js 依賴和編譯資源
-RUN yarn install && \
-    yarn remove node-sass && \
-    yarn add sass --dev && \
-    yarn run development
+# 安裝 Yarn 和 cross-env
+RUN npm install -g yarn && yarn global add cross-env
 
 # 更改應用程式目錄的擁有者
-RUN chown -R www-data:www-data /app
+RUN chown -R www-data: /app
 
-# 設置 PATH 環境變量
-ENV PATH="/usr/local/node/bin:$PATH"
+USER www-data
 
-# Nginx 配置和啟動腳本
-COPY docker/nginx.conf /etc/nginx/nginx.conf
-COPY docker/startup.sh /app/startup.sh
-RUN chmod +x /app/startup.sh
+# 安裝 Node 依賴並替換 node-sass
+RUN cd /app && \
+    yarn install && \
+    yarn remove node-sass && \
+    yarn add sass --dev
 
-# 暴露端口
-EXPOSE 80
+# 編譯前端資源
+RUN cd /app && yarn run development
 
-# 啟動容器時執行的指令
-CMD ["sh", "/app/startup.sh"]
+# 設定容器啟動時執行的指令
+CMD ["sh", "/app/docker/startup.sh"]

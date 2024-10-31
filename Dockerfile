@@ -49,14 +49,18 @@ RUN chown -R www-data: /app
 # 設置 PATH 環境變量
 ENV PATH="/usr/local/node/bin:$PATH"
 
-# 下載並安裝 Node.js 12.x
+# 下載並解壓 Node.js
 RUN wget https://nodejs.org/dist/v12.22.12/node-v12.22.12-linux-x64.tar.xz && \
     tar -xf node-v12.22.12-linux-x64.tar.xz && \
-    mv node-v12.22.12-linux-x64 /usr/local/node && \
-    ln -sf /usr/local/node/bin/node /usr/local/bin/node && \
-    ln -sf /usr/local/node/bin/npm /usr/local/bin/npm && \
-    rm node-v12.22.12-linux-x64.tar.xz && \
-    /usr/local/node/bin/node -v && /usr/local/node/bin/npm -v
+    rm node-v12.22.12-linux-x64.tar.xz
+
+# 移動 Node.js 並創建軟連結
+RUN mv node-v12.22.12-linux-x64 /usr/local/node && \
+    ln -s /usr/local/node/bin/node /usr/local/bin/node && \
+    ln -s /usr/local/node/bin/npm /usr/local/bin/npm
+
+# 確認安裝
+RUN /usr/local/node/bin/node -v && /usr/local/node/bin/npm -v
 
 USER www-data
 

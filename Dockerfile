@@ -1,31 +1,37 @@
-FROM php:7.4-fpm-alpine3.13
+FROM php:7.4-fpm-alpine
 
-# Install necessary packages
+# 安裝必要的工具和 nginx，以及 nodejs 和 yarn
 RUN apk add --no-cache nginx wget nodejs npm
 
-# Create directories for nginx
+# 使用 npm 安裝 yarn
+RUN npm install -g yarn
+
+# 安裝 PHP MySQL 擴展
+RUN docker-php-ext-install pdo pdo_mysql
+
+# 創建 nginx 所需的目錄
 RUN mkdir -p /run/nginx
 
-# Copy nginx configuration
+# 複製 nginx 配置檔案
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 
-# Set the working directory
-WORKDIR /app
+# 準備應用程式目錄
+RUN mkdir -p /app
+COPY . /app
+COPY ./src /app
 
-# Copy the application files
-COPY . .
-
-# Install Composer and PHP dependencies
+# 安裝 composer
 RUN sh -c "wget http://getcomposer.org/composer.phar && chmod a+x composer.phar && mv composer.phar /usr/local/bin/composer"
-RUN composer install --no-dev
 
-# Install Yarn and Node.js dependencies
-RUN npm install -g yarn && yarn global add cross-env
-RUN yarn install
-RUN yarn dev
+# 安裝 PHP 依賴
+RUN cd /app && \
+    /usr/local/bin/composer install --no-dev
 
-# Ensure proper ownership of application files
+# 安裝 nodejs 依賴
+RUN yarn install && yarn run development
+
+# 更改應用程式目錄的擁有者
 RUN chown -R www-data: /app
 
 # 設定容器啟動時執行的指令
-CMD ["sh", "/app/docker/startup.sh"]
+CMD sh /app/docker/startup.sh

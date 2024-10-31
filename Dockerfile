@@ -1,12 +1,17 @@
-# 使用 Node.js 官方 12-alpine 作為基礎映像構建 node_builder 階段
-FROM node:12-alpine as node_builder
+# 使用 alpine:3.13 作為基礎映像，確保兼容性
+FROM alpine:3.13 as node_builder
+
+# 安裝 Node.js 12.x 和 npm
+RUN apk add --no-cache nodejs=12.22.12-r0 npm
 
 # PHP 環境構建
 FROM php:7.4-fpm-alpine3.13
 
 # 從 node_builder 階段拷貝完整的 Node.js 和 npm 目錄
-COPY --from=node_builder /usr/local /usr/local
+COPY --from=node_builder /usr /usr
+COPY --from=node_builder /lib /lib
 
+# 驗證 Node.js 和 npm 是否成功拷貝
 RUN node -v && npm -v
 
 # 安裝必要的工具和依賴
@@ -49,7 +54,7 @@ RUN wget http://getcomposer.org/composer.phar && chmod a+x composer.phar && mv c
 RUN cd /app && /usr/local/bin/composer install --no-dev
 
 # 安裝 Yarn 和 cross-env
-RUN npm install -g yarn --force && yarn global add cross-env
+RUN npm install -g yarn && yarn global add cross-env
 
 # 更改應用程式目錄的擁有者
 RUN chown -R www-data: /app

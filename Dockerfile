@@ -54,6 +54,12 @@ RUN wget https://nodejs.org/dist/v12.22.12/node-v12.22.12-linux-x64.tar.xz && \
     ln -s /usr/local/node/bin/npm /usr/local/bin/npm && \
     rm node-v12.22.12-linux-x64.tar.xz
 
+# 將 Node.js 路徑加入 PATH
+ENV PATH="/usr/local/node/bin:$PATH"
+
+# 確認 Node.js 和 npm 可用
+RUN node -v && npm -v
+
 RUN npm install -g yarn
 
 RUN yarn global add cross-env

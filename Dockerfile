@@ -1,13 +1,11 @@
-# 使用多階段構建引入 Node.js 12
+# 使用 Node.js 官方 12-alpine 作為基礎映像構建 node_builder 階段
 FROM node:12-alpine as node_builder
 
 # PHP 環境構建
 FROM php:7.4-fpm-alpine3.13
 
-# 從 node_builder 階段拷貝 node 和 npm
-COPY --from=node_builder /usr/local/bin/node /usr/local/bin/
-COPY --from=node_builder /usr/local/lib/node_modules /usr/local/lib/node_modules
-COPY --from=node_builder /usr/local/bin/npm /usr/local/bin/
+# 從 node_builder 階段拷貝完整的 Node.js 和 npm 目錄
+COPY --from=node_builder /usr/local /usr/local
 
 # 安裝必要的工具和依賴
 RUN apk --no-cache update && \

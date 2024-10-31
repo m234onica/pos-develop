@@ -28,7 +28,7 @@ RUN cd /app && \
     /usr/local/bin/composer install --no-dev
 
 # 安裝 nodejs 依賴
-RUN yarn install && yarn run development
+RUN cd /app && yarn install && yarn run development
 
 # 更改應用程式目錄的擁有者
 RUN chown -R www-data: /app

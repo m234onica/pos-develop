@@ -50,12 +50,15 @@ RUN cd /app && \
 # 更改應用程式目錄的擁有者
 RUN chown -R www-data: /app
 
+RUN apk add --no-cache nodejs=12.x npm
+
 # 安裝 Node 依賴並替換 node-sass
 RUN cd /app && \
     yarn install && \
     yarn why node-sass && \
     yarn remove node-sass && \
     yarn add sass --dev
+
 RUN cd /app && \
     yarn run development
 

@@ -35,6 +35,6 @@ class MenuController extends Controller
         } else {
             Menu::find($id)->update($request->all());
         }
-        return redirect()->route('menu.index');
+        return response()->json(['status' => 'success', 'data' => []]);
     }
 }

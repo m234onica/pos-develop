@@ -76,6 +76,6 @@ class OrderController extends Controller
 
         $orders = Order::orderByRaw("FIELD(status, 'UNPAID', 'PROCESSING', 'COMPLETED', 'CANCELED')")->with('items')->get();
 
-        return redirect()->route('order.index', compact('orders'));
+        return response()->json(['status' => 'success', 'data' => $orders]);
     }
 }

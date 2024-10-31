@@ -20,7 +20,6 @@ RUN apk --no-cache update && \
     ln -sf /usr/bin/python2 /usr/bin/python  # 指向 python2
 
 # 使用 npm 安裝 yarn 和 cross-env
-RUN yarn global add cross-env
 
 # 安裝 PHP MySQL 擴展
 RUN docker-php-ext-install pdo pdo_mysql
@@ -56,6 +55,8 @@ RUN wget https://nodejs.org/dist/v12.22.12/node-v12.22.12-linux-x64.tar.xz && \
     rm node-v12.22.12-linux-x64.tar.xz
 
 RUN npm install -g yarn
+
+RUN yarn global add cross-env
 
 # 安裝 Node 依賴並替換 node-sass
 RUN cd /app && \

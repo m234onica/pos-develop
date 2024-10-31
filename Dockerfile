@@ -1,4 +1,4 @@
-ROM php:7.4-fpm-alpine
+FROM php:7.4-fpm-alpine
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
@@ -41,9 +41,6 @@ RUN chown -R laravel:laravel /app
 COPY set_permissions.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/set_permissions.sh
 RUN /usr/local/bin/set_permissions.sh
-
-# 編譯前端資源
-RUN cd /app && yarn run development
 
 # 設定容器啟動時執行的指令
 CMD ["sh", "/app/docker/startup.sh"]

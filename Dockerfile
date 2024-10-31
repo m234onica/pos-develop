@@ -3,7 +3,7 @@ FROM php:7.4-fpm-alpine
 # 安裝必要的工具和 nginx，以及 nodejs 和 yarn
 RUN apk --no-cache update && \
     apk --no-cache add bash git && \
-    apk add --update --no-cache nginx wget yarn curl zlib-dev libzip-dev zip libpng-dev icu-dev nodejs npm
+    apk add --update --no-cache nginx wget yarn curl build-base zlib-dev libzip-dev zip libpng-dev icu-dev nodejs npm
 
 # 使用 npm 安裝 yarn 和 cross-env
 RUN npm install -g yarn \

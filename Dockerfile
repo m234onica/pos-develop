@@ -30,11 +30,6 @@ RUN apk --no-cache update && \
     ln -sf /usr/bin/php7 /usr/bin/php && \
     ln -sf /usr/sbin/php-fpm7 /usr/bin/php-fpm
 
-# 安裝 Composer
-RUN wget https://getcomposer.org/composer-stable.phar && \
-    chmod +x composer-stable.phar && \
-    mv composer-stable.phar /usr/local/bin/composer
-
 # 安裝 PHP MySQL 擴展
 RUN docker-php-ext-install pdo pdo_mysql
 

@@ -34,7 +34,8 @@ RUN cd /app && \
 RUN chown -R www-data: /app
 
 RUN yarn install --dev
-RUN yarn run development
+RUN cd /app && \
+    yarn run development
 
 # 設定容器啟動時執行的指令
 CMD sh /app/docker/startup.sh

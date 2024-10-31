@@ -45,7 +45,6 @@ RUN cd /app && \
 USER root
 # 更改應用程式目錄的擁有者
 RUN chown -R www-data: /app
-USER www-data
 
 # 設置 PATH 環境變量
 ENV PATH="/usr/local/node/bin:$PATH"
@@ -58,6 +57,8 @@ RUN wget https://nodejs.org/dist/v12.22.12/node-v12.22.12-linux-x64.tar.xz && \
     ln -sf /usr/local/node/bin/npm /usr/local/bin/npm && \
     rm node-v12.22.12-linux-x64.tar.xz && \
     /usr/local/node/bin/node -v && /usr/local/node/bin/npm -v
+
+USER www-data
 
 # 確認 Node.js 和 npm 可用
 RUN node -v && npm -v

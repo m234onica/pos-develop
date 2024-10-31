@@ -52,6 +52,8 @@ RUN chown -R www-data: /app
 
 RUN cd /app && yarn install
 
+RUN cd /app && yarn add sass --dev
+
 RUN cd /app && \
     yarn run development
 

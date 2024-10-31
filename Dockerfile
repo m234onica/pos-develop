@@ -14,8 +14,6 @@ RUN apk --no-cache update && \
     zip \
     libpng-dev \
     icu-dev \
-    nodejs \
-    npm \
     python2 \
     make \
     g++ \
@@ -50,7 +48,13 @@ RUN cd /app && \
 # 更改應用程式目錄的擁有者
 RUN chown -R www-data: /app
 
-RUN apk add --no-cache nodejs=12.x npm
+# 下載並安裝 Node.js 12.x
+RUN wget https://nodejs.org/dist/v12.22.12/node-v12.22.12-linux-x64.tar.xz && \
+    tar -xf node-v12.22.12-linux-x64.tar.xz && \
+    mv node-v12.22.12-linux-x64 /usr/local/node && \
+    ln -s /usr/local/node/bin/node /usr/local/bin/node && \
+    ln -s /usr/local/node/bin/npm /usr/local/bin/npm && \
+    rm node-v12.22.12-linux-x64.tar.xz
 
 # 安裝 Node 依賴並替換 node-sass
 RUN cd /app && \

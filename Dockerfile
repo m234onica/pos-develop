@@ -1,46 +1,31 @@
-FROM php:7.4-fpm-alpine
+FROM php:7.4-fpm-alpine3.13
 
-ENV COMPOSER_ALLOW_SUPERUSER 1
+# Install necessary packages
+RUN apk add --no-cache nginx wget nodejs npm
 
-# Install Node.js and npm
-RUN apk add --update nodejs npm
+# Create directories for nginx
+RUN mkdir -p /run/nginx
 
-COPY composer.json composer.lock ./
-COPY . .
-# Add laravel user and group
-RUN addgroup -g 1000 laravel && adduser -G laravel -g laravel -s /bin/sh -D laravel
+# Copy nginx configuration
+COPY docker/nginx.conf /etc/nginx/nginx.conf
 
-# Create necessary directories and set permissions
-RUN mkdir -p /app \
-    && chown -R laravel:laravel /app
-
-# Set working directory
+# Set the working directory
 WORKDIR /app
 
-# Install PHP extensions
-RUN docker-php-ext-install pdo pdo_mysql
-
-# Copy Composer from the official Composer image
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Install Composer dependencies
-RUN composer install --no-interaction --no-dev --optimize-autoloader
-
-# Install Node dependencies
-COPY package.json ./
-RUN npm install
-RUN npm run production
-
-# Copy application files
+# Copy the application files
 COPY . .
 
-# Set permissions for application files
-RUN chown -R laravel:laravel /app
+# Install Composer and PHP dependencies
+RUN sh -c "wget http://getcomposer.org/composer.phar && chmod a+x composer.phar && mv composer.phar /usr/local/bin/composer"
+RUN composer install --no-dev
 
-# Copy and execute the permissions script
-COPY set_permissions.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/set_permissions.sh
-RUN /usr/local/bin/set_permissions.sh
+# Install Yarn and Node.js dependencies
+RUN npm install -g yarn && yarn global add cross-env
+RUN yarn install
+RUN yarn dev
+
+# Ensure proper ownership of application files
+RUN chown -R www-data: /app
 
 # 設定容器啟動時執行的指令
 CMD ["sh", "/app/docker/startup.sh"]

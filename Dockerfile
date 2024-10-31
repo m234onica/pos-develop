@@ -3,10 +3,8 @@ FROM php:7.4-fpm-alpine
 # 安裝必要的工具和 nginx，以及 nodejs 和 yarn
 RUN apk add --no-cache nginx wget nodejs npm
 
-# 使用 npm 安裝 yarn
-RUN npm install -g yarn --python=python2.7 \
-    && yarn install --target_arch=x64 \
-    && yarn global add cross-env
+# 使用 npm 安裝 yarn 和 cross-env
+RUN npm install -g yarn --python=python2.7
 
 # 安裝 PHP MySQL 擴展
 RUN docker-php-ext-install pdo pdo_mysql
@@ -33,7 +31,8 @@ RUN cd /app && \
 RUN chown -R www-data: /app
 
 # 安裝 nodejs 依賴
-RUN cd /app && yarn run development
+WORKDIR /app
+RUN yarn install && yarn run development
 
 # 設定容器啟動時執行的指令
 CMD sh /app/docker/startup.sh

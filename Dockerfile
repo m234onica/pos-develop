@@ -32,14 +32,10 @@ RUN mkdir -p /run/nginx
 # 複製 nginx 配置檔案
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 
-
 # 準備應用程式目錄
-RUN mkdir -p /var/www/html
-COPY . /var/www/html
-COPY ./src /var/www/html
-
-# 設定工作目錄為 /var/www/html
-WORKDIR /var/www/html
+RUN mkdir -p /app
+COPY . /app
+COPY ./src /app
 
 # 安裝 Composer
 RUN wget https://getcomposer.org/composer-stable.phar && \
@@ -47,7 +43,7 @@ RUN wget https://getcomposer.org/composer-stable.phar && \
     mv composer-stable.phar /usr/local/bin/composer
 
 # 安裝 PHP 依賴
-RUN cd /var/www/html && \
+RUN cd /app && \
     composer install --no-dev
 
 # 設置 Node.js 12.x 和 npm 存儲庫，並安裝 Node.js 和 npm
@@ -77,13 +73,13 @@ RUN npm install -g yarn --python=python2.7 \
     && yarn global add cross-env
 
 # 更改應用程式目錄的擁有者
-RUN chown -R www-data: /var/www/html
+RUN chown -R www-data: /app
 
 # 安裝 Node 依賴並替換 node-sass
-RUN cd /var/www/html && yarn install
+RUN cd /app && yarn install
 
 # 編譯前端資源
-RUN cd /var/www/html && yarn run development
+RUN cd /app && yarn run development
 
 # 設定容器啟動時執行的指令
-CMD ["sh", "/var/www/html/docker/startup.sh"]
+CMD ["sh", "/app/docker/startup.sh"]

@@ -20,6 +20,7 @@ RUN apt-get update && \
     make \
     g++ \
     build-essential && \
+    netcat && \
     ln -sf /usr/bin/python2 /usr/bin/python && \
     rm -rf /var/lib/apt/lists/*
 

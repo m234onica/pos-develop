@@ -16,8 +16,8 @@
     <div class="container-fluid">
         <div class="tab">
             <div class="nev-tab">
-                <button class="{{ Request::is('menu') ? 'active' : '' }}" id="menu" onclick="window.location.href='/menu'">菜單管理</button>
-                <button class="{{ Request::is('order') || Request::is('order/create') ? 'active' : '' }}"
+                <button class="{{ Request::is('menus') ? 'active' : '' }}" id="menu" onclick="window.location.href='/menu'">菜單管理</button>
+                <button class="{{ Request::is('orders') || Request::is('orders/create') ? 'active' : '' }}"
                     id="order" onclick="window.location.href='/order'">訂單管理</button>
             </div>
             @yield('content')

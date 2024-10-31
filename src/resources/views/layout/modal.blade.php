@@ -193,7 +193,7 @@
             success: function(response) {
                 alert('訂單成立!');
                 $('#cartModal').modal('hide');
-                window.location.href = '/order'; // 重新加載頁面以顯示更新後的資料
+                window.location.href = '/orders'; // 重新加載頁面以顯示更新後的資料
             },
             error: function(xhr) {
 

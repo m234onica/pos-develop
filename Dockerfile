@@ -1,6 +1,4 @@
-FROM php:7.4-fpm-alpine
-
-RUN apk add --no-cache python3 && ln -sf /usr/bin/python3 /usr/bin/python
+FROM php:7.4-fpm-alpine3.13
 
 # 安裝必要的工具和依賴
 RUN apk --no-cache update && \
@@ -21,7 +19,8 @@ RUN apk --no-cache update && \
     python2 \
     make \
     g++ \
-    build-base
+    build-base && \
+    ln -sf /usr/bin/python2 /usr/bin/python  # 指向 python2
 
 # 使用 npm 安裝 yarn 和 cross-env
 RUN npm install -g yarn \

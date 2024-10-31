@@ -1,84 +1,84 @@
 # Laravel & PHP specific
-/vendor
-/node_modules
-/public/storage
-/storage/*.key
-/.env
-/.env.*
-/.phpunit.result.cache
+/src/vendor
+/src/node_modules
+/src/public/storage
+/src/storage/*.key
+/src/.env
+/src/.env.*
+/src/.phpunit.result.cache
 Homestead.yaml
 Homestead.json
-/.vagrant
+/src/.vagrant
 
 # Laravel 5 & 6 specific
-/public/hot
-/public/storage
-/storage/debugbar
+/src/public/hot
+/src/public/storage
+/src/storage/debugbar
 
 # IDE and editor specific
-/.idea
-/.vscode
-*.sublime-project
-*.sublime-workspace
+/src/.idea
+/src/.vscode
+/src/*.sublime-project
+/src/*.sublime-workspace
 
 # System files
-.DS_Store
-Thumbs.db
+/src/.DS_Store
+/src/Thumbs.db
 
 # Composer
-composer.lock
+/src/composer.lock
 
 # NPM/Yarn
-npm-debug.log
-yarn-error.log
+/src/npm-debug.log
+/src/yarn-error.log
 
 # Temporary files
-.phpunit.result.cache
-storage/*.key
-.env.backup
-.env.local
-.env.development
-.env.production
-.env.testing
-.env.example
+/src/.phpunit.result.cache
+/src/storage/*.key
+/src/.env.backup
+/src/.env.local
+/src/.env.development
+/src/.env.production
+/src/.env.testing
+/src/.env.example
 
 # Cache
-/storage/framework/cache/data
-/storage/logs
+/src/storage/framework/cache/data
+/src/storage/logs
 
 # Sentry
-.sentryclirc
+/src/.sentryclirc
 
 # Ignore IDE or system-specific metadata
-/.vscode/
-*.swp
-*.idea/
-*.iml
-*.log
+/src/.vscode/
+/src/*.swp
+/src/*.idea/
+/src/*.iml
+/src/*.log
 
 # Ignoring user-uploaded files
-/public/uploads
-/public/files
+/src/public/uploads
+/src/public/files
 
 # Ignore test coverage
-/coverage/
+/src/coverage/
 
 # Ignore built assets
-/public/mix-manifest.json
-/public/js/app.js
-/public/css/app.css
+/src/public/mix-manifest.json
+/src/public/js/app.js
+/src/public/css/app.css
 
 # Other generated files
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnp
-.pnp.js
+/src/npm-debug.log*
+/src/yarn-debug.log*
+/src/yarn-error.log*
+/src/.pnp
+/src/.pnp.js
 
 # Node.js build artifacts
-build/
-dist/
+/src/build/
+/src/dist/
 
 # Backup files
-*.bak
-*.backup
+/src/*.bak
+/src/*.backup

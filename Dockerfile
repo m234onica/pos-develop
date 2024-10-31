@@ -6,13 +6,14 @@ RUN mkdir -p /run/nginx
 
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 
-COPY . .
-
-RUN ls
+RUN mkdir -p /app
+COPY . /app
+COPY ./src /app
 
 RUN sh -c "wget http://getcomposer.org/composer.phar && chmod a+x composer.phar && mv composer.phar /usr/local/bin/composer"
-RUN /usr/local/bin/composer install --no-dev
+RUN cd /app && \
+    /usr/local/bin/composer install --no-dev
 
-RUN chown -R www-data: .
+RUN chown -R www-data: /app
 
-CMD sh ./docker/startup.sh
+CMD sh /app/docker/startup.sh

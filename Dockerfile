@@ -23,8 +23,7 @@ RUN apk --no-cache update && \
     ln -sf /usr/bin/python2 /usr/bin/python  # 指向 python2
 
 # 使用 npm 安裝 yarn 和 cross-env
-RUN npm install -g yarn \
-    && yarn global add cross-env
+RUN yarn global add cross-env
 
 # 安裝 PHP MySQL 擴展
 RUN docker-php-ext-install pdo pdo_mysql

@@ -42,9 +42,10 @@ RUN sh -c "wget http://getcomposer.org/composer.phar && chmod a+x composer.phar 
 RUN cd /app && \
     /usr/local/bin/composer install --no-dev
 
-
+USER root
 # 更改應用程式目錄的擁有者
 RUN chown -R www-data: /app
+USER www-data
 
 # 設置 PATH 環境變量
 ENV PATH="/usr/local/node/bin:$PATH"

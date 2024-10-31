@@ -1,9 +1,26 @@
 FROM php:7.4-fpm-alpine
 
-# 安裝必要的工具和 nginx，以及 nodejs 和 yarn
+# 安裝必要的工具和依賴
 RUN apk --no-cache update && \
-    apk --no-cache add bash git && \
-    apk add --update --no-cache nginx wget yarn curl build-base zlib-dev libzip-dev zip libpng-dev icu-dev nodejs npm
+    apk add --no-cache \
+    bash \
+    git \
+    nginx \
+    wget \
+    yarn \
+    curl \
+    zlib-dev \
+    libzip-dev \
+    zip \
+    libpng-dev \
+    icu-dev \
+    nodejs \
+    npm \
+    python2 \
+    make \
+    g++ \
+    build-base && \
+    ln -sf /usr/bin/python2 /usr/bin/python  # 指向 python2
 
 # 使用 npm 安裝 yarn 和 cross-env
 RUN npm install -g yarn \

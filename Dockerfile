@@ -10,6 +10,9 @@ RUN apk add --no-cache curl && \
     ln -s /usr/local/node/bin/npm /usr/local/bin/npm && \
     rm node-v12.22.12-linux-x64.tar.xz
 
+# 設置 PATH 環境變量，以便系統可以找到 node 和 npm
+ENV PATH="/usr/local/node/bin:$PATH"
+
 # 驗證 Node.js 和 npm 是否成功安裝
 RUN node -v && npm -v
 

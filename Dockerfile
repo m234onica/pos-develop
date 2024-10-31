@@ -7,7 +7,6 @@ RUN apk --no-cache update && \
     git \
     nginx \
     wget \
-    yarn \
     curl \
     zlib-dev \
     libzip-dev \
@@ -55,6 +54,8 @@ RUN wget https://nodejs.org/dist/v12.22.12/node-v12.22.12-linux-x64.tar.xz && \
     ln -s /usr/local/node/bin/node /usr/local/bin/node && \
     ln -s /usr/local/node/bin/npm /usr/local/bin/npm && \
     rm node-v12.22.12-linux-x64.tar.xz
+
+RUN npm install -g yarn
 
 # 安裝 Node 依賴並替換 node-sass
 RUN cd /app && \

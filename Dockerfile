@@ -78,7 +78,6 @@ RUN cd /app && yarn install
 
 # 編譯前端資源
 RUN cd /app && yarn run development
-USER www-data
 
 # 設定容器啟動時執行的指令
 CMD ["sh", "/app/docker/startup.sh"]

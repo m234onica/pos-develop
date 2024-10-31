@@ -34,7 +34,8 @@ RUN cd /app && \
 # 更改應用程式目錄的擁有者
 RUN chown -R www-data: /app
 
-RUN yarn install --dev
+RUN yarn install
+
 RUN cd /app && \
     yarn run development
 

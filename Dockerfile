@@ -4,7 +4,7 @@ FROM php:7.4-fpm-alpine
 RUN apk add --no-cache nginx wget nodejs npm
 
 # 使用 npm 安裝 yarn 和 cross-env
-RUN npm install -g yarn --python=python2.7
+RUN npm install -g yarn
 
 # 安裝 PHP MySQL 擴展
 RUN docker-php-ext-install pdo pdo_mysql
@@ -23,16 +23,14 @@ COPY ./src /app
 # 安裝 composer
 RUN sh -c "wget http://getcomposer.org/composer.phar && chmod a+x composer.phar && mv composer.phar /usr/local/bin/composer"
 
-# 安裝 PHP 依賴
+# Install PHP dependencies
 RUN cd /app && \
     /usr/local/bin/composer install --no-dev
 
+    # Install JavaScript dependencies and compile assetsaa
+RUN cd /app && yarn install && yarn production
+
 # 更改應用程式目錄的擁有者
 RUN chown -R www-data: /app
-
-# 安裝 nodejs 依賴
-WORKDIR /app
-RUN yarn install && yarn run development
-
 # 設定容器啟動時執行的指令
 CMD sh /app/docker/startup.sh

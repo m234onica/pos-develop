@@ -1,61 +1,46 @@
-# 使用 PHP 7.4 和 Alpine 基礎映像
-FROM php:7.4-fpm-alpine3.13
+ROM php:7.4-fpm-alpine
 
-# 安裝 Node.js 和 npm
-RUN apk add --no-cache nodejs=12.22.12-r0 npm
+ENV COMPOSER_ALLOW_SUPERUSER 1
 
-# 安裝必要的工具和 PHP 擴展
-RUN apk --no-cache update && \
-    apk add --no-cache \
-    bash \
-    git \
-    nginx \
-    wget \
-    curl \
-    zlib-dev \
-    libzip-dev \
-    zip \
-    libpng-dev \
-    icu-dev \
-    python2 \
-    make \
-    g++ \
-    build-base && \
-    ln -sf /usr/bin/python2 /usr/bin/python && \
-    docker-php-ext-install pdo pdo_mysql
+# Install Node.js and npm
+RUN apk add --update nodejs npm
 
-# 創建 nginx 所需的目錄
-RUN mkdir -p /run/nginx
+COPY composer.json composer.lock ./
+COPY . .
+# Add laravel user and group
+RUN addgroup -g 1000 laravel && adduser -G laravel -g laravel -s /bin/sh -D laravel
 
-# 複製 nginx 配置檔案
-COPY docker/nginx.conf /etc/nginx/nginx.conf
+# Create necessary directories and set permissions
+RUN mkdir -p /app \
+    && chown -R laravel:laravel /app
 
-# 準備應用程式目錄
-RUN mkdir -p /app
-COPY . /app
-COPY ./src /app
+# Set working directory
+WORKDIR /app
 
-# 安裝 Composer
-RUN wget https://getcomposer.org/composer-stable.phar && \
-    chmod +x composer-stable.phar && \
-    mv composer-stable.phar /usr/local/bin/composer
+# Install PHP extensions
+RUN docker-php-ext-install pdo pdo_mysql
 
-# 安裝 PHP 依賴
-RUN cd /app && composer install --no-dev
+# Copy Composer from the official Composer image
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# 安裝 Yarn 和 cross-env
-RUN npm install -g yarn && yarn global add cross-env
+# Install Composer dependencies
+RUN composer install --no-interaction --no-dev --optimize-autoloader
 
-# 更改應用程式目錄的擁有者
-RUN chown -R www-data:www-data /app
+# Install Node dependencies
+COPY package.json ./
+RUN npm install
+RUN npm run production
 
-USER www-data
+# Copy application files
+COPY . .
 
-# 安裝 Node 依賴並替換 node-sass
-RUN cd /app && \
-    yarn install && \
-    yarn remove node-sass && \
-    yarn add sass --dev
+# Set permissions for application files
+RUN chown -R laravel:laravel /app
+
+# Copy and execute the permissions script
+COPY set_permissions.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/set_permissions.sh
+RUN /usr/local/bin/set_permissions.sh
 
 # 編譯前端資源
 RUN cd /app && yarn run development

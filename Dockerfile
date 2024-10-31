@@ -61,7 +61,7 @@ USER www-data
 RUN cd /app && \
     yarn install && \
     yarn remove node-sass && \
-    yarn add sass --dev
+    yarn add node-sass@4.14.1 --dev
 
 # 編譯前端資源
 RUN cd /app && yarn run development

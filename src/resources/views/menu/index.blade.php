@@ -7,7 +7,8 @@
         class="add-btn"
         data-toggle="modal"
         data-target="#editMenuPage">+ 新增菜單</button>
-    <div class="menu-grid">
+
+        <div class="menu-grid">
         @if (!$menus->count())
         <div class="empty">
             <p>目前尚未有任何菜單!</p>

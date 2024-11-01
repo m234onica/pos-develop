@@ -1,13 +1,12 @@
 @extends('layout/container')
 
 @section('content')
-<button
-    id="addOrder"
-    class="add-btn"
-    onclick="window.location.href='/order/create'">+ 新增訂單</button>
-
 <div class="order-list">
     @csrf
+    <button
+        id="addOrder"
+        class="add-btn"
+        onclick="window.location.href='/order/create'">+ 新增訂單</button>
 
     @if (!$orders->count())
     <div class="empty">

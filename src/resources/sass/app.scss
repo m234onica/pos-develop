@@ -7,6 +7,7 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #f5f5f5;
+    font-size: 36px;
 }
 
 .container-fluid {
@@ -176,7 +177,7 @@ body {
             }
 
             .status span {
-                font-size: 14px;
+                font-size: 24px;
                 color: #333;
             }
         }
@@ -232,7 +233,7 @@ body {
         .form-group {
             margin-bottom: 20px;
             label {
-                font-size: 24px;
+                font-size: 36px;
                 font-weight: 400;
                 color: #333;
             }
@@ -242,7 +243,7 @@ body {
                 padding: 8px;
                 border: 1px solid #ccc;
                 border-radius: 4px;
-                font-size: 24px;
+                font-size: 36px;
             }
         }
 
@@ -298,7 +299,7 @@ body {
             color: white;
             border: none;
             padding: 10px 20px;
-            font-size: 20px;
+            font-size: 36px;
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.3s;
@@ -339,7 +340,7 @@ body {
                     margin-bottom: 5px;
                 }
                 p {
-                    font-size: 24px;
+                    font-size: 36px;
                     color: #888;
                 }
                 span {
@@ -414,7 +415,7 @@ h2 {
 
 .finished button,
 .cancel button {
-    font-size: 20px;
+    font-size: 36px;
 }
 
 .finished,
@@ -433,7 +434,7 @@ h2 {
         background-color: #f0f0f0; /* 滑鼠懸停時改變背景色 */
     }
     .view {
-        font-size: 20px;
+        font-size: 36px;
     }
     span {
         color: #aaa;
@@ -478,12 +479,12 @@ h2 {
             margin-bottom: 5px;
         }
         p {
-            font-size: 20px;
+            font-size: 36px;
             color: #888;
         }
         span {
             margin-left: auto;
-            font-size: 20px;
+            font-size: 36px;
             color: #333;
         }
     }

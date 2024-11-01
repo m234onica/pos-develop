@@ -83,7 +83,6 @@ body {
                 background-color: #fdfdfd;
                 border: 1.5px solid #ddd;
                 color: #333;
-                margin: 20px 5% 0px 5%;
             }
         }
 
@@ -230,7 +229,7 @@ body {
                 }
             }
             #cart-modal-body {
-                font-size: 28px;
+                font-size: 36px;
             }
         }
         /* 表單欄位樣式 */
@@ -311,7 +310,6 @@ body {
             &:hover {
                 background-color: #fdfdfd;
                 border: 1.5px solid #49c6f7;
-                margin: -1.5px;
                 color: #49c6f7;
                 /* 深綠色 */
             }
@@ -330,10 +328,6 @@ body {
                 font-size: 36px;
                 color: #666;
                 margin-bottom: 10px;
-
-                span:nth-child(2) {
-                    text-align: right;
-                }
             }
             .order-item {
                 display: flex;
@@ -470,6 +464,7 @@ h2 {
     margin-right: 10px; /* 右側間距 */
     vertical-align: text-bottom;
     margin-bottom: 2px;
+    font-size: 24px;
 }
 
 /* 收合區域的樣式 */

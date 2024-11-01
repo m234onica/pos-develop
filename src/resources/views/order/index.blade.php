@@ -73,15 +73,13 @@
     <!-- Order Card (Finished) with Collapse -->
     <a class="order-card finished" data-toggle="collapse" data-target="#completedOrder{{ $order->id }}" aria-expanded="false" aria-controls="completedOrder{{ $order->id }}">
         <div class="order-header">
-            <div>
-                <span class="material-symbols-outlined icon">
-                    check_circle
-                </span>
-                <span>{{ $order->order_no }}</span>
-            </div>
-            <span>{{ $order->created_at }}</span>
+            <span class="material-symbols-outlined icon" style="font-size:24px;">
+                check_circle
+            </span>
+            <span style="text-align: center;">{{ $order->order_no }}</span>
+            <span style="text-align: center;">{{ $order->created_at }}</span>
             <!-- Collapse Button -->
-            <span class="view">查看訂單詳情</span>
+            <span class="view" style="width: 10%; font-size: 24px;">查看訂單詳情</span>
         </div>
 
         <div id="completedOrder{{ $order->id }}" class="collapse">

@@ -1,4 +1,7 @@
 #!/bin/sh
+# 確保 www-data 擁有 /app/storage 和 /app/bootstrap/cache 的權限
+chown -R www-data:www-data /app/storage /app/bootstrap/cache
+chmod -R 775 /app/storage /app/bootstrap/cache
 
 sed -i "s,LISTEN_PORT,$PORT,g" /etc/nginx/nginx.conf
 

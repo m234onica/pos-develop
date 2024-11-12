@@ -72,6 +72,11 @@ RUN npm install -g yarn --python=python2.7 \
     && yarn install --target_arch=x64 \
     && yarn global add cross-env
 
+# 設置 storage 和 cache 的權限
+RUN mkdir -p /app/storage /app/bootstrap/cache && \
+    chown -R www-data:www-data /app/storage /app/bootstrap/cache && \
+    chmod -R 775 /app/storage /app/bootstrap/cache
+
 # 更改應用程式目錄的擁有者
 RUN chown -R www-data: /app
 

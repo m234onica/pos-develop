@@ -32,8 +32,8 @@ RUN mkdir -p /run/nginx
 # 複製 nginx 配置檔案
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 
-# 設定應用程式目錄
-WORKDIR /app
+# 準備應用程式目錄
+RUN mkdir -p /app
 COPY . /app
 COPY ./src /app
 
@@ -43,11 +43,12 @@ RUN wget https://getcomposer.org/composer-stable.phar && \
     mv composer-stable.phar /usr/local/bin/composer
 
 # 安裝 PHP 依賴
-RUN composer install --no-dev
+RUN cd /app && \
+    composer install --no-dev
 
-# 設置 Node.js 和 npm
-RUN curl -fsSL https://deb.nodesource.com/setup_10.x | bash - && \
-    apt-get install -y nodejs
+# 設置 Node.js 12.x 和 npm 存儲庫，並安裝 Node.js 和 npm
+RUN curl -fsSL https://deb.nodesource.com/setup_10.x | bash - \
+    && apt-get install -y nodejs
 
 # 安裝 NVM
 ENV NVM_DIR /root/.nvm
@@ -55,6 +56,7 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | b
 
 # 設置 NVM 環境變數
 ENV NODE_VERSION 10.24.1
+ENV NVM_DIR /root/.nvm
 ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
 ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
@@ -62,23 +64,32 @@ ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 RUN /bin/bash -c "source $NVM_DIR/nvm.sh && nvm install $NODE_VERSION && nvm use $NODE_VERSION && nvm alias default $NODE_VERSION"
 
 # 確認 Node.js 和 npm 安裝成功
-RUN /bin/bash -c "source $NVM_DIR/nvm.sh && node -v && npm -v"
+RUN /bin/bash -c "source $NVM_DIR/nvm.sh && node -v"
+RUN /bin/bash -c "source $NVM_DIR/nvm.sh && npm -v"
 
-# 安裝 yarn 和相關套件
-RUN npm install -g yarn --python=python2.7 && yarn install --target_arch=x64 && yarn global add cross-env
+# 安裝 yarn & BS3 所需特別的設定、套件
+RUN npm install -g yarn --python=python2.7 \
+    && yarn install --target_arch=x64 \
+    && yarn global add cross-env
 
-# 設置 storage 和 cache 目錄的權限
-RUN mkdir -p /app/storage /app/bootstrap/cache && \
+# 確保 storage、logs 和 cache 的權限
+RUN mkdir -p /app/storage/logs /app/bootstrap/cache && \
     chown -R www-data:www-data /app/storage /app/bootstrap/cache && \
     chmod -R 775 /app/storage /app/bootstrap/cache
 
-# 確保 logs 目錄存在並設置正確權限
-RUN mkdir -p /app/storage/logs && \
-    chown -R www-data:www-data /app/storage/logs && \
-    chmod -R 775 /app/storage/logs
+# 創建空的 laravel.log 文件並設置權限
+RUN touch /app/storage/logs/laravel.log && \
+    chown www-data:www-data /app/storage/logs/laravel.log && \
+    chmod 664 /app/storage/logs/laravel.log
 
-# 設置前端資源的 Node 依賴
-RUN yarn install && yarn run development
+# 更改應用程式目錄的擁有者
+RUN chown -R www-data: /app
 
-# 設定容器啟動指令
+# 安裝 Node 依賴並替換 node-sass
+RUN cd /app && yarn install
+
+# 編譯前端資源
+RUN cd /app && yarn run development
+
+# 設定容器啟動時執行的指令
 CMD ["sh", "/app/docker/startup.sh"]

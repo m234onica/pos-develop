@@ -53,25 +53,25 @@ class OrderController extends Controller
     public function store(Request $request, $id = null)
     {
         try {
-            Validator::make($request->all(), [
-                'carts' => 'required|array|min:1', // carts 必須是至少有一個項目的陣列
-                'carts.*.name' => 'required|string',
-                'carts.*.price' => 'required|integer|min:0',
-                'carts.*.type' => 'required|string|in:BASIC,CLUB,RICE,SPICY,DRINK,ADVANCED,RICE_ADVANCED', // 假設 type 只能是 DRINK 或 FOOD
-                'carts.*.quantity' => 'required|integer|min:1',
-                'carts.*.options' => 'nullable|array',
-                'carts.*.riceOptions' => 'nullable',
-                'carts.*.riceAdvancedOptions' => 'nullable',
-                'carts.*.advancedOptions' => 'nullable|array',
-                'carts.*.spicyOptions' => 'nullable',
-                'carts.*.drinkOptions' => 'nullable|array',
-                'carts.*.totalPrice' => 'required|integer|min:1',
-            ])->validate();
-
             DB::beginTransaction();
             if ($id) {
                 $order = Order::where('id', $id)->update(['status' => $request->status]);
             } else {
+                Validator::make($request->all(), [
+                    'carts' => 'required|array|min:1', // carts 必須是至少有一個項目的陣列
+                    'carts.*.name' => 'required|string',
+                    'carts.*.price' => 'required|integer|min:0',
+                    'carts.*.type' => 'required|string|in:BASIC,CLUB,RICE,SPICY,DRINK,ADVANCED,RICE_ADVANCED', // 假設 type 只能是 DRINK 或 FOOD
+                    'carts.*.quantity' => 'required|integer|min:1',
+                    'carts.*.options' => 'nullable|array',
+                    'carts.*.riceOptions' => 'nullable',
+                    'carts.*.riceAdvancedOptions' => 'nullable',
+                    'carts.*.advancedOptions' => 'nullable|array',
+                    'carts.*.spicyOptions' => 'nullable',
+                    'carts.*.drinkOptions' => 'nullable|array',
+                    'carts.*.totalPrice' => 'required|integer|min:1',
+                ])->validate();
+
                 $orderNo = Order::whereDate('created_at', today())->count() + 1;
                 $order = Order::create([
                     // $orderNo 三碼需補零

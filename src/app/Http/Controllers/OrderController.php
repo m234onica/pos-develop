@@ -21,7 +21,8 @@ class OrderController extends Controller
                 if (isset($remarkArr)) {
                     $item->basic = implode(', ', $remarkArr->BASIC ?? []);
                     $item->club = implode(', ', $remarkArr->CLUB ?? []);
-                    $item->drink = $remarkArr->DRINK ?? '';
+                    $item->size = $remarkArr->SIZE ?? '';
+                    $item->heat = $remarkArr->HEAT ?? '';
                     $item->spicy = $remarkArr->SPICY ?? '';
                     $item->rice = $remarkArr->RICE ?? '';
                     $item->riceAdvanced = $remarkArr->RICE_ADVANCED ?? '';
@@ -53,25 +54,26 @@ class OrderController extends Controller
     public function store(Request $request, $id = null)
     {
         try {
+            Validator::make($request->all(), [
+                'carts' => 'required|array|min:1', // carts 必須是至少有一個項目的陣列
+                'carts.*.name' => 'required|string',
+                'carts.*.price' => 'required|integer|min:0',
+                'carts.*.type' => 'required|string|in:BASIC,CLUB,RICE,SPICY,DRINK,ADVANCED,RICE_ADVANCED', // 假設 type 只能是 DRINK 或 FOOD
+                'carts.*.quantity' => 'required|integer|min:1',
+                'carts.*.options' => 'nullable|array',
+                'carts.*.riceOptions' => 'nullable',
+                'carts.*.riceAdvancedOptions' => 'nullable',
+                'carts.*.advancedOptions' => 'nullable|array',
+                'carts.*.spicyOptions' => 'nullable',
+                'carts.*.sizekOptions' => 'nullable|array',
+                'carts.*.heatkOptions' => 'nullable|array',
+                'carts.*.totalPrice' => 'required|integer|min:1',
+            ])->validate();
+
             DB::beginTransaction();
             if ($id) {
                 $order = Order::where('id', $id)->update(['status' => $request->status]);
             } else {
-                Validator::make($request->all(), [
-                    'carts' => 'required|array|min:1', // carts 必須是至少有一個項目的陣列
-                    'carts.*.name' => 'required|string',
-                    'carts.*.price' => 'required|integer|min:0',
-                    'carts.*.type' => 'required|string|in:BASIC,CLUB,RICE,SPICY,DRINK,ADVANCED,RICE_ADVANCED', // 假設 type 只能是 DRINK 或 FOOD
-                    'carts.*.quantity' => 'required|integer|min:1',
-                    'carts.*.options' => 'nullable|array',
-                    'carts.*.riceOptions' => 'nullable',
-                    'carts.*.riceAdvancedOptions' => 'nullable',
-                    'carts.*.advancedOptions' => 'nullable|array',
-                    'carts.*.spicyOptions' => 'nullable',
-                    'carts.*.drinkOptions' => 'nullable|array',
-                    'carts.*.totalPrice' => 'required|integer|min:1',
-                ])->validate();
-
                 $orderNo = Order::whereDate('created_at', today())->count() + 1;
                 $order = Order::create([
                     // $orderNo 三碼需補零
@@ -106,8 +108,12 @@ class OrderController extends Controller
                         $remark['SPICY'] = $item['spicyOptions']['name'];
                     }
 
-                    if (isset($item['drinkOptions'])) {
-                        $remark['DRINK'] = $item['drinkOptions']['name'];
+                    if (isset($item['sizeOptions'])) {
+                        $remark['SIZE'] = $item['sizeOptions']['name'];
+                    }
+
+                    if (isset($item['heatOptions'])) {
+                        $remark['HEAT'] = $item['heatOptions']['name'];
                     }
 
                     $order->items()->create([

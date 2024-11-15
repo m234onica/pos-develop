@@ -65,7 +65,7 @@
                         </div>
                     </div>
                     <div id="menuOptions" class="form-group">
-                        <label class="label" for="menuOptions">配菜：</label>
+                        <label class="label" for="menuOptions">基本配菜：</label>
                         <div class="checkbox-grid" id="options-container">
                             <!-- 選項會動態填充 -->
                         </div>
